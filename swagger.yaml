@@ -1,0 +1,2881 @@
+openapi: 3.0.3
+info:
+  title: E-commerce - Monolithic
+
+  description: |-
+    This is Swagger API DOCUMENTATION for the E-commerce - Monolithic API.
+    - [Facebook](https://www.facebook.com/YonceDang)
+    - [Github](https://github.com/yoncedang)
+    - Email: huydang.dev@gmail.com
+    - Phone: 0931.827.837
+
+    - ------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    - Admin for test: olgayrova1792@gmail.com - Abc@123456
+  contact:
+    email: huydang.dev@gmail.com
+  version: 1.0.11
+
+servers:
+  - url: http://localhost:1234/api
+
+tags:
+  - name: Auth
+    description: Methods, Registration, authentication, Login ....
+  - name: Categories
+    description: Methods, Categories, Get, Create, Update, Delete ....
+  - name: Products
+    description: Methods, Products, Get, Create, Update, Delete ....
+  - name: Cart
+    description: Methods, Cart, Get, Create, Update, Delete ....
+  - name: Checkout
+    description: Methods, Checkout, add Discount, Delete ....
+  - name: Address
+    description: Methods, Shipping, Get, Create, Update, Delete ....
+  - name: Payment Methods
+    description: Methods, Get ....
+  - name: Promotion
+    description: Methods, Promotion, Get ....
+  - name: Order
+    description: Methods, Order product ....
+  - name: History
+    description: Methods, History, Get ....
+
+paths:
+  /auth/signup:
+    post:
+      tags:
+        - Auth
+      summary: Sign up
+      description: Sign up new account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: email@email.com
+                password:
+                  type: string
+                  example: Abc@123456
+      responses:
+        "200":
+          description: Sign up successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Please check Email verify
+                  data:
+                    type: array
+                    items:
+                      type: object
+        "422":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Email already exists
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Please input email and password
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Internal server error
+
+  /auth/verification-email:
+    get:
+      tags:
+        - Auth
+      summary: Verify sign up
+      description: Verify email sign up
+      parameters:
+        - name: token
+          in: query
+          required: true
+          description: Token verify
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Verify sign up successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Success: account actived"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Error: token invalid"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Internal server error
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Unauthorized
+
+  /auth/verification-otp:
+    post:
+      tags:
+        - Auth
+      summary: Verify OTP
+      description: Verification signup with OTP
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                OTP:
+                  type: string
+                  example: 123456
+      responses:
+        "200":
+          description: Verify OTP successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Verification success account"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Error: OTP invalid"
+
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: OTP code is Expired
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Internal server error
+
+  /auth/resend-verification:
+    get:
+      tags:
+        - Auth
+      summary: Resend verification
+      description: Resend verification email
+      parameters:
+        - name: email
+          in: cookie
+          required: true
+          description: Email
+          schema:
+            type: string
+            example: email
+      responses:
+        "200":
+          description: Resend verification successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Success: resend verification email"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Error: email not found"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Internal server error
+
+  /auth/login:
+    post:
+      tags:
+        - Auth
+      summary: Login
+      description: Login account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: example@gmail.com
+                password:
+                  type: string
+                  example: Abc@123456
+      responses:
+        "200":
+          description: Login successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Login success
+                  data:
+                    type: object
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Please input Email and Password
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Email or Password not Match
+
+        "403":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Please verification your account or contact admin
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Internal server error
+
+  /auth/forgot-password:
+    post:
+      tags:
+        - Auth
+      summary: Forgot password
+      description: Forgot password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: example@example.com
+      responses:
+        "200":
+          description: Forgot password successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Please check your email to reset password
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Please input email
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Account not found
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Internal server error
+
+  /auth/reset-password:
+    put:
+      tags:
+        - Auth
+      summary: Forgot password
+      description: Forgot password
+      parameters:
+        - name: token
+          in: query
+          required: true
+          description: Token verification for forgot password
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                password:
+                  type: string
+                  example: Abc@123456
+      responses:
+        "200":
+          description: Forgot password successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Update password success
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Please input password
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: User not found
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Internal server error
+
+  /auth/request-accesstoken:
+    get:
+      tags:
+        - Auth
+      summary: Request access token
+      description: Request access token from user id
+      parameters:
+        - name: id
+          in: query
+          required: true
+          description: Request access token from user id
+          schema:
+            type: string
+            example: 1
+      responses:
+        "200":
+          description: Request access token successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Request access token success
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Id is required
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: User not found
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Internal server error
+
+  /auth/logout:
+    post:
+      tags:
+        - Auth
+      summary: Logout
+      description: Logout
+      parameters:
+        - name: accessToken
+          in: cookie
+          required: true
+          description: Logout account
+          schema:
+            type: string
+            example:
+      responses:
+        "200":
+          description: Logout successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Logout success
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: AccessToken is required
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: User not found
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Internal server error
+
+  /auth/profile:
+    get:
+      tags:
+        - Auth
+      summary: Get Profile
+      description: Get Profile by USER
+      parameters:
+        - name: accessToken
+          in: cookie
+          required: true
+          description: Get Profile by USER
+          schema:
+            type: string
+            example:
+      responses:
+        "200":
+          description: Get Profile success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Get profile success
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: User not found
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: AccessToken is required
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Internal server error
+
+  /auth/all-user:
+    get:
+      tags:
+        - Auth
+      summary: Get Profile by ID
+      description: Get Profile by ID
+      parameters:
+        - name: accessToken
+          in: cookie
+          required: true
+          description: Get Profile by ID
+          schema:
+            type: string
+        - name: page
+          in: query
+          required: true
+          description: Page
+          schema:
+            type: string
+            example: 1
+      responses:
+        "200":
+          description: Get Profile by ID success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Get profile success
+                  data:
+                    type: array
+                    items:
+                      type: object
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Unauthorized
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Do not found any USER
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Internal server error
+
+  /auth/profile-by-ID:
+    get:
+      tags:
+        - Auth
+      summary: Get Profile by ID
+      description: Get Profile by ID
+      parameters:
+        - name: id
+          in: query
+          required: true
+          description: ID
+          schema:
+            type: string
+            example: 1
+      responses:
+        "200":
+          description: Get Profile by ID success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Get profile success
+                  data:
+                    type: array
+                    items:
+                      type: object
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: ID is required
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Do not found user
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Internal server error
+  ##############################################################################################################################################################################
+  ##############################################################################################################################################################################
+
+  /categories/create:
+    post:
+      tags:
+        - Categories
+      summary: Create Categories
+      description: Create Categories
+      parameters:
+        - name: accessToken
+          in: cookie
+          required: true
+          description: Create Categories
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: Clothes
+      responses:
+        "200":
+          description: Create Categories successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Create Categories successfully
+                  data:
+                    type: object
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Unauthorized
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Categories not found
+        "422":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Categories already exists
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Internal server error
+
+  /categories/get-categories-id:
+    get:
+      tags:
+        - Categories
+      summary: Get Categories by ID
+      description: Get Categories by ID
+      parameters:
+        - name: id
+          in: query
+          required: true
+          description: Categories ID
+          schema:
+            type: string
+            example: 1
+      responses:
+        "200":
+          description: Get Categories by ID successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Get Categories by ID successfully
+
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Unauthorized
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Categories not found
+
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Internal server error
+
+  /categories/edit:
+    put:
+      tags:
+        - Categories
+      summary: Edit Categories
+      description: Edit Categories
+      parameters:
+        - name: accessToken
+          in: cookie
+          required: true
+          description: Edit Categories
+          schema:
+            type: string
+        - name: id
+          in: query
+          required: true
+          description: Categories ID
+          schema:
+            type: string
+            example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: Clothes
+      responses:
+        "200":
+          description: Edit Categories success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Edit Categories success
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Categories ID must required
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: Categories not found
+                    type: string
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: Categories already exists
+                    type: string
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: Internal server error
+                    type: string
+
+  /categories/all-categories:
+    get:
+      tags:
+        - Categories
+      summary: Get all Categories
+      description: Get all Categories
+      responses:
+        "200":
+          description: Get all Categories successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Get all Categories successfully
+                  data:
+                    type: array
+                    items:
+                      type: object
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: Categories not found
+                    type: string
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: Internal server error
+                    type: string
+
+  /categories/delete:
+    delete:
+      tags:
+        - Categories
+      summary: Delete Categories by ID
+      description: Delete Categories by ID
+      parameters:
+        - name: accessToken
+          in: cookie
+          required: true
+          description: Delete Categories by ID
+          schema:
+            type: string
+        - name: id
+          in: query
+          required: true
+          description: Categories ID
+          schema:
+            type: string
+            example: 1
+      responses:
+        "200":
+          description: Delete Categories by ID successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Delete Categories by ID success
+        "400":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: Categories ID must required
+                    type: string
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: You are not admin'
+                    type: string
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: Categories not found
+                    type: string
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: Internal server error
+                    type: string
+
+  ##############################################################################################################################################################################
+  ##############################################################################################################################################################################
+
+  /product/all-products:
+    get:
+      tags:
+        - Products
+      summary: Get all Products
+      description: Get all Products
+      parameters:
+        - name: page
+          in: query
+          required: true
+          description: Page
+          schema:
+            type: string
+            example: 1
+      responses:
+        "200":
+          description: Get all Products successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Get all Products successfully
+                  data:
+                    type: array
+                    items:
+                      type: object
+        "401":
+          description: Input Page
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: Please input page number
+                    type: string
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: Products not found
+                    type: string
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: Internal server error
+                    type: string
+
+  /product/product-ID:
+    get:
+      tags:
+        - Products
+      summary: Get Product by ID
+      description: Get Product by ID
+      parameters:
+        - name: id
+          in: query
+          required: true
+          description: Product ID
+          schema:
+            type: number
+            example: 1
+      responses:
+        "200":
+          description: Get Product by ID successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Get Product by ID successfully
+                  data:
+                    type: array
+                    items:
+                      type: object
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: ID is required
+
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: Product not found
+                    type: string
+
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: Internal server error
+                    type: string
+
+  /product/categories-ID:
+    get:
+      tags:
+        - Products
+      summary: Get Product by Categories ID
+      description: Get Product by Categories ID
+      parameters:
+        - name: categories_ID
+          in: query
+          required: true
+          description: Categories ID
+          schema:
+            type: number
+            example: 1
+      responses:
+        "200":
+          description: Get Product by Categories ID successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Get Product by Categories ID successfully
+                  data:
+                    type: array
+                    items:
+                      type: object
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: Categories ID is required
+                    type: string
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: Product not found
+                    type: string
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: Internal server error
+                    type: string
+
+  /product/search:
+    get:
+      tags:
+        - Products
+      summary: Search Product
+      description: Search Product by name (Low to High) from (1 => 100.000 Price ...)
+      parameters:
+        - name: name
+          in: query
+          required: true
+          description: Product name
+          schema:
+            type: string
+            example: Ao
+        - name: searchBy
+          in: query
+          required: false
+          description: "toLow: High => Low, toHigh: Low => High, toAlpha: A => Z"
+          schema:
+            type: string
+            example: toLow
+        - name: fromPrice
+          in: query
+          required: false
+          description: From price
+          schema:
+            type: number
+            example: 1
+        - name: toPrice
+          in: query
+          required: false
+          description: To price
+          schema:
+            type: number
+            example: 100000000
+
+      responses:
+        "200":
+          description: Search Product successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Search Product success
+                  data:
+                    type: array
+                    items:
+                      type: object
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: Name is required
+                    type: string
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: Product not found
+                    type: string
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: Internal server error
+                    type: string
+
+  /product/add:
+    post:
+      tags:
+        - Products
+      summary: Add Product
+      description: Add Product
+      parameters:
+        - name: accessToken
+          in: cookie
+          required: true
+          description: Add Product
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: IMAGE file
+                product_name:
+                  type: string
+                  description: Product name
+                desc:
+                  type: string
+                  description: Product description
+                price:
+                  type: number
+                  description: Product price
+                quality_stock:
+                  type: number
+                  description: Product quality
+                categories_ID:
+                  type: number
+                  description: Categories ID
+      responses:
+        "200":
+          description: Add Product successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Add Product ${Name}
+                  data:
+                    type: object
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Please select an image
+        "422":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: Image size too large. Please select an image less than 7MB
+                    type: string
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: Internal server error
+                    type: string
+
+  /product/delete:
+    delete:
+      tags:
+        - Products
+      summary: Delete Product by ID
+      description: Delete Product by ID
+      parameters:
+        - name: accessToken
+          in: cookie
+          required: true
+          description: Delete Product by ID
+          schema:
+            type: string
+        - name: id
+          in: query
+          required: true
+          description: Product ID
+          schema:
+            type: number
+            example: 1
+      responses:
+        "200":
+          description: Delete Product by ID successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Delete Product by ID success
+        "400":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: Product ID must required
+                    type: string
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: Product not found
+                    type: string
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: Internal server error
+                    type: string
+
+  /product/edit:
+    put:
+      tags:
+        - Products
+      summary: Edit Product
+      description: Edit Product
+      parameters:
+        - name: accessToken
+          in: cookie
+          required: true
+          description: Edit Product
+          schema:
+            type: string
+        - name: id
+          in: query
+          required: true
+          description: Product ID
+          schema:
+            type: number
+            example: 1
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: IMAGE file
+                product_name:
+                  type: string
+                  description: Product name
+                desc:
+                  type: string
+                  description: Product description
+                price:
+                  type: string
+                  description: Product price
+                quality_stock:
+                  type: number
+                  description: Product quality
+                category_id:
+                  type: number
+                  description: Categories ID
+      responses:
+        "200":
+          description: Edit Product success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Edit Product success
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: At least one field must required - category_id OPTIONAL
+                    type: string
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: Internal server error
+                    type: string
+
+  ##############################################################################################################################################################################
+  ##############################################################################################################################################################################
+
+  /cart/addcart:
+    post:
+      tags:
+        - Cart
+      summary: Add Cart
+      description: Add Cart by user
+      parameters:
+        - name: accessToken
+          in: cookie
+          required: true
+          description: accessToken USER
+          schema:
+            type: string
+        - name: id
+          in: query
+          required: true
+          description: Product ID
+          schema:
+            type: number
+            example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                quantity:
+                  type: number
+                  example: 1
+      responses:
+        "200":
+          description: Add Cart successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Add Cart successfully
+                  data:
+                    type: array
+                    items:
+                      type: object
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: Quality is required
+                    type: string
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: Product not found
+                    type: string
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: Internal server error
+                    type: string
+
+  /cart/listcart:
+    get:
+      tags:
+        - Cart
+      summary: List Cart
+      description: List Cart by user
+      parameters:
+        - name: accessToken
+          in: cookie
+          required: true
+          description: accessToken USER
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List Cart successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: List Cart successfully
+                  data:
+                    type: array
+                    items:
+                      type: object
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: Product cart is empty !!!
+                    type: string
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: Internal server error
+                    type: string
+
+  /cart/delete:
+    delete:
+      tags:
+        - Cart
+      summary: Delete Cart by ID
+      description: Delete Cart by ID
+      parameters:
+        - name: accessToken
+          in: cookie
+          required: true
+          description: Delete Cart by ID
+          schema:
+            type: string
+        - name: id
+          in: query
+          required: true
+          description: Cart ID
+          schema:
+            type: number
+            example: 1
+      responses:
+        "200":
+          description: Delete Cart by ID successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Delete success from cart
+        "400":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: Cart ID must required
+                    type: string
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: Cart not found
+                    type: string
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: Internal server error
+                    type: string
+
+  ##############################################################################################################################################################################
+  ##############################################################################################################################################################################
+
+  /promotion/list:
+    get:
+      tags:
+        - Promotion
+      summary: List Promotion
+      description: List Promotion from Stripe
+      responses:
+        "200":
+          description: List Promotion successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: List Promotion successfully
+                  data:
+                    type: array
+                    items:
+                      type: object
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: Promotion is empty !!!
+                    type: string
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: Internal server error
+                    type: string
+
+  ##############################################################################################################################################################################
+  ##############################################################################################################################################################################
+
+  /checkout/totalprice:
+    post:
+      tags:
+        - Checkout
+      summary: Total Price
+      description: Total Price of Cart
+      parameters:
+        - name: accessToken
+          in: cookie
+          required: true
+          description: Total Price of Cart
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Total Price of Cart successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Total Price of Cart successfully
+                  data:
+                    type: array
+                    items:
+                      type: object
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: Internal server error
+                    type: string
+
+  /checkout/clear-checkout:
+    delete:
+      tags:
+        - Checkout
+      summary: Clear Checkout
+      description: Clear Checkout
+      parameters:
+        - name: accessToken
+          in: cookie
+          required: true
+          description: Clear Checkout
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Clear Checkout successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Clear Checkout successfully
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Checkout is empty
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: Internal server error
+                    type: string
+
+  ##############################################################################################################################################################################
+  ##############################################################################################################################################################################
+
+  /address/new-address:
+    post:
+      tags:
+        - Address
+      summary: Add new address before order
+      description: Add new address before order
+      parameters:
+        - name: accessToken
+          in: cookie
+          required: true
+          description: Add new address
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                fullname:
+                  type: string
+                  example: Nguyen Van A
+                phone:
+                  type: string
+                  example: 0123456789
+                address:
+                  type: string
+                  example: 37 Bàu Cát 2
+                ward:
+                  type: string
+                  example: Phường 14
+                district:
+                  type: string
+                  example: Tân Bình
+                city:
+                  type: string
+                  example: Hồ Chí Minh
+      responses:
+        "200":
+          description: Add new address successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Add new address success
+                  data:
+                    type: array
+                    items:
+                      type: object
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: You are not user
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: All fields are required
+                    type: string
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: User not found
+                    type: string
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: Internal server error
+                    type: string
+
+  /address/edit:
+    put:
+      tags:
+        - Address
+      summary: Edit address by Address ID
+      description: Edit address by ID
+      parameters:
+        - name: accessToken
+          in: cookie
+          required: true
+          description: Edit address by ID
+          schema:
+            type: string
+        - name: id
+          in: query
+          required: true
+          description: Address ID
+          schema:
+            type: number
+            example: 1
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                fullname:
+                  type: string
+                  example: Nguyen Van A
+                phone:
+                  type: string
+                  example: 0123456789
+                address:
+                  type: string
+                  example: 37 Bàu Cát 2
+                ward:
+                  type: string
+                  example: Phường 14
+                district:
+                  type: string
+                  example: Tân Bình
+                city:
+                  type: string
+                  example: Hồ Chí Minh
+      responses:
+        "200":
+          description: Edit address by ID successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Edit address by ID successfully
+                  data:
+                    type: array
+                    items:
+                      type: object
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: At least one field is required
+                    type: string
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Address not found
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: You are not user
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: Internal server error
+                    type: string
+
+  /address/delete:
+    delete:
+      tags:
+        - Address
+      summary: Delete address by Address ID
+      description: Delete address by ID
+      parameters:
+        - name: accessToken
+          in: cookie
+          required: true
+          description: Delete address by ID
+          schema:
+            type: string
+        - name: id
+          in: query
+          required: true
+          description: Address ID
+          schema:
+            type: number
+            example: 1
+      responses:
+        "200":
+          description: Delete address by ID successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Delete address success
+        "400":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: Address ID must required
+                    type: string
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: You are not user
+                    type: string
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Address not found
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Internal server error
+
+  /address/list:
+    get:
+      tags:
+        - Address
+      summary: List address by User ID
+      description: List address by User ID
+      parameters:
+        - name: accessToken
+          in: cookie
+          required: true
+          description: List address by User ID
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List address by User ID successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: List address by User ID successfully
+                  data:
+                    type: array
+                    items:
+                      type: object
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: You are not user
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Address not found
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Internal server error
+
+  ##############################################################################################################################################################################
+  ##############################################################################################################################################################################
+
+  /payment-methods/list:
+    get:
+      tags:
+        - Payment Methods
+      summary: List Payment Methods
+      description: List Payment Methods
+      responses:
+        "200":
+          description: List Payment Methods successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: List Payment Methods successfully
+                  data:
+                    type: array
+                    items:
+                      type: object
+        "404":
+          description: Payment Methods not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Payment Methods not found
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Internal server error
+
+  /payment-methods/payment-id:
+    get:
+      tags:
+        - Payment Methods
+      summary: Get Payment Methods by ID
+      description: Get Payment Methods by ID
+      parameters:
+        - name: id
+          in: query
+          required: true
+          description: Payment Methods ID
+          schema:
+            type: number
+            example: 1
+      responses:
+        "200":
+          description: Get Payment Methods by ID successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Get Payment Methods by ID successfully
+                  data:
+                    type: object
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: ID is required
+                    type: string
+        "404":
+          description: Payment Methods not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: Payment Methods not found
+                    type: string
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Internal server error
+
+  ##############################################################################################################################################################################
+  ##############################################################################################################################################################################
+  /order/make-order:
+    post:
+      tags:
+        - Order
+      summary: Make Order
+      description: Make Order
+      parameters:
+        - name: accessToken
+          in: cookie
+          required: true
+          description: Make Order
+          schema:
+            type: string
+        - name: address_id
+          in: query
+          required: true
+          description: Address ID
+          schema:
+            type: number
+            example: 1
+        - name: payment_id
+          in: query
+          required: true
+          description: Payment Methods ID
+          schema:
+            type: number
+            example: 1
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                note:
+                  type: string
+                  description: Please delivery as soon as possible
+      responses:
+        "200":
+          description: Make Order successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Make Order successfully
+                  data:
+                    type: array
+                    items:
+                      type: object
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: You are not user
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: Address ID and Payment Methods ID must required
+                    type: string
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: User still not checkout - Please checkout first before order
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: Internal server error
+                    type: string
+
+  /order/success:
+    post:
+      tags:
+        - Order
+      summary: Payment success
+      description: Payment success
+      parameters:
+        - name: session_id
+          in: query
+          required: true
+          description: Session ID
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Payment success successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Payment success successfully
+                  data:
+                    type: array
+                    items:
+                      type: object
+        "400":
+          description: Payment success failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: This transaction is not paid yet
+                    type: string
+        "401":
+          description: Payment cancel failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: You are not user
+                    type: string
+        "404":
+          description: Payment success failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: Order not found
+                    type: string
+        "500":
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Server error
+
+  /order/cancel:
+    post:
+      tags:
+        - Order
+      summary: Payment cancel
+      description: Payment cancel
+      parameters:
+        - name: session_id
+          in: query
+          required: true
+          description: Session ID
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Payment cancel successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Payment cancelled
+        "400":
+          description: Payment cancel failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: This transaction is not paid yet
+                    type: string
+        "401":
+          description: Payment cancel failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: You are not user
+                    type: string
+        "404":
+          description: Payment cancel failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: Order not found
+                    type: string
+        "500":
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Server error
+
+  /order/list-paid:
+    get:
+      tags:
+        - Order
+      summary: List Order Paid
+      description: List Order Paid
+      parameters:
+        - name: accessToken
+          in: cookie
+          required: true
+          description: List Order Paid
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List Order Paid successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: List Order Paid successfully
+                  data:
+                    type: array
+                    items:
+                      type: object
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: You are not Admin
+                    type: string
+        "404":
+          description: List Order Paid failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: Order Paid is empty
+                    type: string
+        "500":
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Server error
+
+  /order/list-pending:
+    get:
+      tags:
+        - Order
+      summary: List Order Pending
+      description: List Order Pending
+      parameters:
+        - name: accessToken
+          in: cookie
+          required: true
+          description: List Order Pending
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List Order Pending get success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: List Order Pending get success
+                  data:
+                    type: array
+                    items:
+                      type: object
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: You are not Admin
+                    type: string
+        "404":
+          description: List Order Pending failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: Order Pending is empty
+                    type: string
+        "500":
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Server error
+
+  /order/list-cancelled:
+    get:
+      tags:
+        - Order
+      summary: List Order Cancelled
+      description: List Order Cancelled
+      parameters:
+        - name: accessToken
+          in: cookie
+          required: true
+          description: List Order Cancelled
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List Order Cancelled get success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: List Order Cancelled get success
+                  data:
+                    type: array
+                    items:
+                      type: object
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: You are not Admin
+                    type: string
+        "404":
+          description: List Order Cancelled failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: Order Cancelled is empty
+                    type: string
+        "500":
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Server error
+
+  /order/search-date:
+    get:
+      tags:
+        - Order
+      summary: Search Order by date
+      description: Search Order by date
+      parameters:
+        - name: accessToken
+          in: cookie
+          required: true
+          description: AccessToken
+          schema:
+            type: string
+        - name: date
+          in: query
+          required: true
+          description: Date ISO8601 - YYYY-MM-DD
+          schema:
+            example: 2021-05-20
+            type: string
+
+      responses:
+        "200":
+          description: Search Order by date get success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Search Order by date get success
+                  data:
+                    type: array
+                    items:
+                      type: object
+        "400":
+          description: Search Order by date failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: Date is required
+                    type: string
+        "401":
+          description: Search Order by date failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: You are not Admin
+                    type: string
+        "404":
+          description: Search Order by date failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: Order is empty
+                    type: string
+        "500":
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Server error
+
+  ##############################################################################################################################################################################
+  ##############################################################################################################################################################################
+
+  /history/order-history:
+    get:
+      tags:
+        - History
+      summary: Order History
+      description: Order History
+      parameters:
+        - name: accessToken
+          in: cookie
+          required: true
+          description: Order History
+          schema:
+            type: string
+
+      responses:
+        "200":
+          description: Order History get success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Order History get success
+                  data:
+                    type: array
+                    items:
+                      type: object
+        "401":
+          description: Order History failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: You are not user
+                    type: string
+        "404":
+          description: Order History failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: Order History is empty
+                    type: string
+        "500":
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Server error
